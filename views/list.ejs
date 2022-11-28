@@ -137,18 +137,20 @@
                 </tr>
               </thead>
               <tbody>
+          <% data.forEach((item, index) => { %>
                 <tr>
-                  <td>1</td>
-                  <td>Tantowi</td>
-                  <td>15</td>
-                  <td>1.5</td>
-                  <td>15 september 1997</td>
-                  <td>true</td>
+                  <td> <%= index + 1 %> </td>
+                  <td> <%= item.string %> </td>
+                  <td> <%= item.integer %> </td>
+                  <td> <%= item.float %> </td>
+                  <td> <%= item.date %> </td>
+                  <td> <%= item.boolean %> </td>
                   <td>
-                    <a href="#" class="btn btn-success"><i class="fa-solid fa-pen-to-square"></i> Edit</a>
-                    <a href="#" onclick="return confirm('Are you sure you wanna delete this ?')" class="btn btn-danger"><i class="fa-solid fa-trash"></i> Delete</a>
+                    <a href="/edit/<%= item._id %>" class="btn btn-success"><i class="fa-solid fa-pen-to-square"></i> Edit</a>
+                    <a href="/delete/<%= item._id %>" onclick="return confirm('Are you sure you wanna delete this ?')" class="btn btn-danger"><i class="fa-solid fa-trash"></i> Delete</a>
                   </td>
                 </tr>
+          <% }) %>
               </tbody>
             </table>
       

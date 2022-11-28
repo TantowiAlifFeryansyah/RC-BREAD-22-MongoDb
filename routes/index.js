@@ -9,51 +9,73 @@ module.exports = function (db) {
   router.get('/', async function (req, res, next) {
     try {
       const users = await User.find().toArray()
-      res.json(users)
+      res.render('list', { data: users })
     } catch (err) {
-      res.json({ err })
+      console.log(`list error`, err);
     }
   });
 
-  router.post('/', async function (req, res, next) {
+  router.get('/add', async function (req, res, next) {
     try {
-      const result = await User.insertOne(req.body)
-      const user = await User.findOne({ _id: ObjectId(result.inseredId) })
-      res.json(user)
+      res.render('add')
+    } catch (err) {
+      console.log(`add error`, err);
+    }
+  });
+
+  router.post('/add', async function (req, res, next) {
+    try {
+      await User.insertOne({
+          string: req.body.string,
+          integer: Number(req.body.integer),
+          float: parseFloat(req.body.float),
+          date: req.body.date,
+          boolean: JSON.parse(req.body.boolean)
+      })
+      res.redirect('/')
     } catch (err) {
       res.json({ err })
     }
   });
 
-  router.put('/:id', async function (req, res, next) {
+  router.get('/edit/:id', async function (req, res, next) {
+    try {
+      const users = await User.find({_id: ObjectId(req.params.id)}).toArray()
+      res.render('edit',{ data: users[0] })
+    } catch (err) {
+      console.log(`edit error`, err);
+    }
+  });
+
+  router.post('/edit/:id', async function (req, res, next) {
     try {
       const result = await User.findOneAndUpdate({
-        _id: ObjectId(req.params.id)
+        "_id": ObjectId(`${req.params.id}`)
       }, {
         $set: {
           string: req.body.string,
-          integer: req.body.integer,
-          float: req.body.float,
-          date: req.body.float,
-          boolean: req.body.boolean
+          integer: Number(req.body.integer),
+          float: parseFloat(req.body.float),
+          date: req.body.date,
+          boolean: JSON.parse(req.body.boolean)
         }
-      },{
-          returnOriginal: false
-        })
-      res.json(result.value)
+      }, {
+        returnOriginal: false
+      })
+      res.redirect('/');
     } catch (err) {
-      res.json({ err })
+      console.log(`add error`, err);
     }
   });
 
-  router.delete('/:id', async function (req, res, next) {
+  router.get('/delete/:id', async function (req, res, next) {
     try {
       const result = await User.findOneAndDelete({
         _id: ObjectId(req.params.id)
       })
-      res.json(result.value)
+      res.redirect('/')
     } catch (err) {
-      res.json({ err })
+      console.log(`delete error`, err);
     }
   });
 
