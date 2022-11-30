@@ -7,25 +7,49 @@ var moment = require('moment');
 /* GET home page. */
 module.exports = function (db) {
   const User = db.collection('siswa');
-
-  // const page = req.query.page || 1;
-  // const limit = 3;
-  // const offset = (page - 1) * limit
-
   router.get('/', async function (req, res, next) {
     try {
-
-  // PAGINATIONS
+      // PAGINATIONS
       const page = req.query.page || 1
       const limitList = 3
       const offset = (page - 1) * limitList
-      
-      const users = await User.find().skip(offset).limit(limitList).toArray()
+
+      // SEARCHING
+      const wheres = {}
+
+      if (req.query.string && req.query.stringcheck) {
+        wheres['string'] = new RegExp(`${req.query.string}`, 'i')
+      }
+
+      if (req.query.integer && req.query.integercheck) {
+        wheres['integer'] = parseInt(`${req.query.integer}`)
+      }
+
+      if (req.query.float && req.query.floatcheck) {
+        wheres['float'] = parseFloat(`${req.query.float}`)
+      }
+
+      if (req.query.datecheck) {
+        if (req.query.startdate != "" && req.query.enddate != "") {
+          wheres["date"] = {
+            $gte: new Date(`${req.query.startdate}`), $lte: new Date(`${req.query.enddate}`)
+          }
+        } else if (req.query.startdate != ''){
+          wheres["date"] = { $gte: new Date(`${req.query.startdate}`) };
+        } else if (req.query.enddate != ''){
+          wheres["date"] = { $lte: new Date(`${req.query.enddate}`) };
+        }
+      }
+
+      if (req.query.boolean && req.query.booleancheck) {
+        wheres['boolean'] = JSON.parse(`${req.query.boolean}`)
+      }
+
+      const users = await User.find(wheres).skip(offset).limit(limitList).toArray()
       const total = await User.find().count(users)
       const pages = Math.ceil(total / limitList)
-      console.log(`count`, pages);
 
-      res.render('list', { data: users, moment, page, pages })
+      res.render('list', { data: users, moment, page, pages, offset , query: req.query})
     } catch (err) {
       console.log(`list error`, err);
     }
