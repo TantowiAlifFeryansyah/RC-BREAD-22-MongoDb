@@ -86,7 +86,7 @@ module.exports = function (db) {
         string: req.body.string,
         integer: Number(req.body.integer),
         float: parseFloat(req.body.float),
-        date: req.body.date,
+        date: new Date(req.body.date),
         boolean: JSON.parse(req.body.boolean)
       })
       res.redirect('/')
@@ -115,7 +115,7 @@ module.exports = function (db) {
           string: req.body.string,
           integer: Number(req.body.integer),
           float: parseFloat(req.body.float),
-          date: req.body.date,
+          date: new Date(req.body.date),
           boolean: JSON.parse(req.body.boolean)
         }
       }, {
